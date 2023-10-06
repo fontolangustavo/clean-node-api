@@ -1,4 +1,4 @@
-import * as request from 'supertest'
+import request from 'supertest'
 import app from '../config/app'
 import { MongoHelper } from '../../infra/db/mongodb/helpers/mongo-helper';
 
@@ -12,7 +12,7 @@ describe('SignUp Routes', () => {
   })
 
   beforeEach(async () => {
-    const accountCollection = MongoHelper.getCollection('accounts')
+    const accountCollection = await MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
@@ -21,7 +21,7 @@ describe('SignUp Routes', () => {
       .post('/api/v1/signup')
       .send({
         name: 'any_name',
-        email: 'any_email',
+        email: 'any_email@gmail.com',
         password: 'any_password',
         passwordConfirmation: 'any_password'
       })
