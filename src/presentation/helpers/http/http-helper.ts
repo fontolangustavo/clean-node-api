@@ -1,5 +1,5 @@
-import type { HttpResponse } from '../protocols'
-import { ServerError, UnauthorizedError } from '../errors'
+import type { HttpResponse } from '../../protocols'
+import { ServerError, UnauthorizedError } from '../../errors'
 
 export const ok = (data: any): HttpResponse => {
   return {
