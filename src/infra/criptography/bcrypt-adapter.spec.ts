@@ -38,7 +38,7 @@ describe('Bcrypt Adapter', () => {
     const sut = makeSut()
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    jest.spyOn(bcrypt, 'hash').mockImplementation(async () => { await Promise.reject(new Error()) })
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(async () => { await Promise.reject(new Error()) })
 
     const promise = sut.hash('any_value')
 
@@ -60,5 +60,15 @@ describe('Bcrypt Adapter', () => {
     const isValid = await sut.compare('any_value', 'any_hash')
 
     expect(isValid).toBeTruthy()
+  })
+
+  test('should return false when compare fails', async () => {
+    const sut = makeSut()
+
+    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(async () => await Promise.resolve(false))
+
+    const isValid = await sut.compare('any_value', 'any_hash')
+
+    expect(isValid).toBeFalsy()
   })
 })
