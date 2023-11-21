@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Docker: Attach to Node",
+      "port": 9222,
+      "remoteRoot": "/usr/src/clean-node-api",
+      "request": "attach",
+      "restart": true,
+      "type": "node"
+    }
+  ]
+}
