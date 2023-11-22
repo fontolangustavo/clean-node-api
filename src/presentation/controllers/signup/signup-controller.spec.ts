@@ -1,7 +1,7 @@
-import { badRequest } from '../../helpers/http/http-helper'
-import { MissingParamError, ServerError } from '../../errors'
+import { badRequest, forbidden, ok, serverError } from '../../helpers/http/http-helper'
+import { EmailInUseError, MissingParamError, ServerError } from '../../errors'
 import { SignUpController } from './signup-controller'
-import type { AddAccount, AddAccountModel, AccountModel, Validation } from './signup-controller-protocols'
+import type { AddAccount, AddAccountModel, AccountModel, Validation, Authentication, AuthenticationModel } from './signup-controller-protocols'
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
@@ -20,9 +20,19 @@ const makeAddAccount = (): AddAccount => {
   return new AddAccountStub()
 }
 
+const makeAuthentication = (): Authentication => {
+  class AuthenticationStub implements Authentication {
+    async auth(authentication: AuthenticationModel): Promise<string> {
+      return 'any_token'
+    }
+  }
+
+  return new AuthenticationStub()
+}
+
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation {
-    validate(input: any): Error {
+    validate(input: any): Error | null {
       return null
     }
   }
@@ -34,17 +44,20 @@ interface SutTypes {
   sut: SignUpController
   addAccountStub: AddAccount,
   validationStub: Validation
+  authenticationStub: Authentication
 }
 
 const makeSut = (): SutTypes => {
   const addAccountStub = makeAddAccount()
   const validationStub = makeValidation()
-  const sut = new SignUpController(addAccountStub, validationStub)
+  const authenticationStub = makeAuthentication()
+  const sut = new SignUpController(addAccountStub, validationStub, authenticationStub)
 
   return {
     sut,
     addAccountStub,
-    validationStub
+    validationStub,
+    authenticationStub
   }
 }
 
@@ -90,6 +103,24 @@ describe('SignUp Controller', () => {
     expect(httpResponse.body).toEqual(new ServerError(null))
   })
 
+  it('should return 403 if AddAccount returns null', async () => {
+    const { sut, addAccountStub } = makeSut()
+
+    jest.spyOn(addAccountStub, 'add').mockReturnValueOnce(Promise.resolve(null))
+
+    const httpRequest = {
+      body: {
+        name: 'valid_name',
+        email: 'valid_email@email.com',
+        password: 'valid_password',
+        passwordConfirmation: 'valid_password'
+      }
+    }
+
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(forbidden(new EmailInUseError()))
+  })
+
   it('should return 200 if valid data is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
@@ -102,13 +133,9 @@ describe('SignUp Controller', () => {
     }
 
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse.statusCode).toBe(200)
-    expect(httpResponse.body).toEqual({
-      id: 'valid_id',
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'valid_password'
-    })
+    expect(httpResponse).toEqual(ok({
+      accessToken: 'any_token'
+    }))
   })
 
   it('should call Validation with correct values', async () => {
@@ -145,4 +172,34 @@ describe('SignUp Controller', () => {
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
 
+  it('should call Authentication with correct values', async () => {
+    const { sut, authenticationStub } = makeSut()
+    const authSpy = jest.spyOn(authenticationStub, 'auth')
+    const httpRequest = {
+      body: {
+        email: 'any_email@email.com',
+        password: 'any_password'
+      }
+    }
+
+    await sut.handle(httpRequest)
+    expect(authSpy).toHaveBeenCalledWith({
+      email: 'any_email@email.com', password: 'any_password'
+    })
+  });
+
+  test('should return 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const httpRequest = {
+      body: {
+        email: 'any_email@email.com',
+        password: 'any_password'
+      }
+    }
+
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(serverError(new Error()))
+  });
 })
