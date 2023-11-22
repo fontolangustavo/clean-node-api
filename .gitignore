@@ -3,3 +3,5 @@ dist
 coverage
 yarn.lock
 data
+!src/data
+.vscode
