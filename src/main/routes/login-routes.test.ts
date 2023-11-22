@@ -61,7 +61,7 @@ describe('Login Routes', () => {
           email: 'any_email@gmail.com',
           password: 'any_password'
         })
-        .expect(200)
+        .expect(401)
     });
   });
 });
