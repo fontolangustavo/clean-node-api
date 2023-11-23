@@ -12,6 +12,9 @@ export class AuthMiddleware implements Middleware {
 
     if (accessToken) {
       const isAuth = await this.loadAccountByToken.load(accessToken)
+      if (isAuth) {
+
+      }
     }
 
     return Promise.resolve(forbidden(new AccessDeniedError()))
