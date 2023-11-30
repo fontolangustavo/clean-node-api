@@ -26,6 +26,7 @@ describe('Survey Mongo Repository', () => {
     const sut = makeSut()
     await sut.add({
       question: 'any_question',
+      created_at: new Date(),
       answers: [
         {
           image: 'any_image',

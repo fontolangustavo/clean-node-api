@@ -1,16 +1,18 @@
 import { AddSurvey, AddSurveyModel, HttpRequest, Validation } from "./add-survey-controller-protocols";
 import { AddSurveyController } from './add-survey-controller'
 import { badRequest, noContent, serverError } from './../../../helpers/http/http-helper'
+import MockDate from 'mockdate'
 
 const makeFakeQuest = (): HttpRequest => ({
   body: {
     question: 'any_questions',
+    created_at: new Date(),
     answers: [
       {
         image: 'any_image',
         answer: 'any_answer'
-      }
-    ]
+      },
+    ],
   }
 })
 
@@ -52,6 +54,14 @@ const makeSut = (): SutTypes => {
 }
 
 describe('AddSurvey Controller', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   test('should call Validation with correct values', async () => {
     const { sut, validationStub } = makeSut()
 
