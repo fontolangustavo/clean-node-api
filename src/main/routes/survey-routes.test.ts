@@ -8,6 +8,55 @@ import env from '../config/env';
 let surveyCollection: Collection
 let accountCollection: Collection
 
+const makeFakeAccount = async (role?: string): Promise<string> => {
+  let account = {
+    name: 'any_name',
+    email: 'any_email@gmail.com',
+    password: 'any_password',
+  }
+
+  if (role) {
+    account = Object.assign(account, { role })
+  }
+
+  const res = await accountCollection.insertOne(account)
+
+  const id = res.insertedId.toString()
+  const accessToken = sign({ id }, env.jwtSecret)
+
+  await accountCollection.updateOne({
+    _id: new ObjectId(id)
+  }, {
+    $set: {
+      accessToken
+    }
+  })
+
+  return accessToken
+}
+
+const makeFakeSurveys = async (): Promise<void> => {
+  await surveyCollection.insertMany([
+    {
+      question: 'any_question',
+      created_at: new Date(),
+      answers: [
+        {
+          answer: 'any_answer'
+        },
+      ]
+    },
+    {
+      question: 'other_question',
+      created_at: new Date(),
+      answers: [
+        {
+          answer: 'other_answer'
+        },
+      ]
+    }])
+}
+
 describe('Surey Routes', () => {
 
   beforeAll(async () => {
@@ -46,23 +95,7 @@ describe('Surey Routes', () => {
     });
 
     test('should return 204 on add survey with valid accessToken', async () => {
-      const res = await accountCollection.insertOne({
-        name: 'any_name',
-        email: 'any_email@gmail.com',
-        password: 'any_password',
-        role: 'admin'
-      })
-
-      const id = res.insertedId.toString()
-      const accessToken = sign({ id }, env.jwtSecret)
-
-      await accountCollection.updateOne({
-        _id: new ObjectId(id)
-      }, {
-        $set: {
-          accessToken
-        }
-      })
+      const accessToken = await makeFakeAccount('admin')
 
       await request(app)
         .post('/api/v1/surveys')
@@ -88,6 +121,16 @@ describe('Surey Routes', () => {
       await request(app)
         .get('/api/v1/surveys')
         .expect(403)
+    });
+
+    test('should return 200 on load surveys with valid accessToken', async () => {
+      await makeFakeSurveys()
+      const accessToken = await makeFakeAccount()
+
+      await request(app)
+        .get('/api/v1/surveys')
+        .set('x-access-token', accessToken)
+        .expect(200)
     });
   });
 });
