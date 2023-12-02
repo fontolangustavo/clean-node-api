@@ -54,7 +54,7 @@ describe('Surey Routes', () => {
       })
 
       const id = res.insertedId.toString()
-      const accessToken = sign({id}, env.jwtSecret)
+      const accessToken = sign({ id }, env.jwtSecret)
 
       await accountCollection.updateOne({
         _id: new ObjectId(id)
@@ -80,6 +80,14 @@ describe('Surey Routes', () => {
           ]
         })
         .expect(204)
+    });
+  });
+
+  describe('GET /surveys', () => {
+    test('should return 403 on load survey without accessToken', async () => {
+      await request(app)
+        .get('/api/v1/surveys')
+        .expect(403)
     });
   });
 });
