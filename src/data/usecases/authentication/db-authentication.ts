@@ -1,7 +1,7 @@
 import { Encrypter } from "../../protocols/criptography/encrypter";
-import { HashComparer } from "../../../data/protocols/criptography/hash-comparer";
+import { HashComparer } from "@/data/protocols/criptography/hash-comparer";
 import { LoadAccountByEmailRepository } from "../../protocols/db/account/load-account-by-email-repository";
-import { Authentication, AuthenticationModel } from "../../../domain/usecases/authentication";
+import { Authentication, AuthenticationModel } from "@/domain/usecases/authentication";
 import { UpdateAccessTokenRepository } from "../../protocols/db/account/update-access-token-repository";
 
 export class DbAuthentication implements Authentication {

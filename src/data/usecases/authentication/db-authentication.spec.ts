@@ -1,5 +1,5 @@
-import { AuthenticationModel } from "../../../domain/usecases/authentication";
-import { AccountModel } from "../../../domain/models/account";
+import { AuthenticationModel } from "@/domain/usecases/authentication";
+import { AccountModel } from "@/domain/models/account";
 import { HashComparer } from "../../protocols/criptography/hash-comparer";
 import { LoadAccountByEmailRepository } from "../../protocols/db/account/load-account-by-email-repository";
 import { DbAuthentication } from "./db-authentication";
