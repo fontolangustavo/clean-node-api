@@ -1,4 +1,4 @@
-import { LoadAccountByEmailRepository } from '../../protocols/db/account/load-account-by-email-repository'
+import { LoadAccountByEmailRepository } from '../../../protocols/db/account/load-account-by-email-repository'
 import { DbAddAccount } from './db-add-account'
 import type { AddAccountRepository, AccountModel, AddAccountModel, Hasher } from './db-add-account.protocols'
 
