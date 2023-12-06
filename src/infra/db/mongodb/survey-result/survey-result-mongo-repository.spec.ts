@@ -73,8 +73,6 @@ describe('Survey Result Mongo Repository', () => {
         created_at: new Date()
       })
 
-      console.log(surveyResult, account, survey)
-
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.id).toBeTruthy()
       expect(surveyResult.answer).toBe(survey.answers[0].answer)
@@ -98,8 +96,6 @@ describe('Survey Result Mongo Repository', () => {
         answer: survey.answers[1].answer,
         created_at: new Date()
       })
-
-      console.log(surveyResult, res)
 
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.id).toEqual(res.id)

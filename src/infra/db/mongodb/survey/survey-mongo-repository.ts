@@ -18,7 +18,7 @@ export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRe
     /* @ts-ignore */
     const surveys: SurveyModel[] = await surveyCollection.find().toArray()
 
-    return surveys
+    return MongoHelper.mapCollection(surveys)
   }
 
 
@@ -28,6 +28,6 @@ export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRe
     /* @ts-ignore */
     const survey: SurveyModel = await surveyCollection.findOne({ _id: new ObjectId(id) })
 
-    return survey
+    return survey && MongoHelper.map(survey)
   }
 }
