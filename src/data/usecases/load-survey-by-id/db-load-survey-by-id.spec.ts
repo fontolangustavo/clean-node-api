@@ -19,7 +19,7 @@ const makeFakeSurvey = (): SurveyModel => (
 
 const makeLoadSurveyByIdRepository = (): LoadSurveyByIdRepository => {
   class LoadSurveyByIdRepositoryStub implements LoadSurveyByIdRepository {
-    async load(id: string): Promise<SurveyModel> {
+    async loadById(id: string): Promise<SurveyModel> {
       return Promise.resolve(makeFakeSurvey())
     }
   }
@@ -53,9 +53,9 @@ describe('DbLoadSurveyById', () => {
 
   test('should call LoadSurveyByIdRepository', async () => {
     const { sut, loadSurveyByIdRepositoryStub } = makeSut()
-    const loadSpy = jest.spyOn(loadSurveyByIdRepositoryStub, 'load')
+    const loadSpy = jest.spyOn(loadSurveyByIdRepositoryStub, 'loadById')
 
-    await sut.load('any_id')
+    await sut.loadById('any_id')
 
     expect(loadSpy).toHaveBeenCalled()
   });
@@ -63,7 +63,7 @@ describe('DbLoadSurveyById', () => {
   test('should return a survey on success', async () => {
     const { sut } = makeSut()
 
-    const survey = await sut.load('any_id')
+    const survey = await sut.loadById('any_id')
 
     expect(survey).toEqual(makeFakeSurvey())
   });
@@ -71,9 +71,9 @@ describe('DbLoadSurveyById', () => {
   test('should throw if LoadSurveysRepositoryStub throws', async () => {
     const { sut, loadSurveyByIdRepositoryStub } = makeSut()
 
-    jest.spyOn(loadSurveyByIdRepositoryStub, 'load').mockReturnValueOnce(Promise.reject(new Error()))
+    jest.spyOn(loadSurveyByIdRepositoryStub, 'loadById').mockReturnValueOnce(Promise.reject(new Error()))
 
-    const promise = sut.load('any_id')
+    const promise = sut.loadById('any_id')
 
     await expect(promise).rejects.toThrow()
   });
