@@ -18,7 +18,7 @@ export class SurveyResultMongoRepository implements SaveSurveyResultRepository {
       returnDocument: 'after'
     })
 
-    console.log(res)
-    return MongoHelper.map(await surveyCollection.findOne<SurveyResultModel>({ _id: res.value._id }))
+    const survey = await surveyCollection.findOne<SurveyResultModel>({ _id: res.value._id })
+    return MongoHelper.map(survey)
   }
 }
