@@ -35,28 +35,6 @@ const makeFakeAccount = async (role?: string): Promise<string> => {
   return accessToken
 }
 
-const makeFakeSurveys = async (): Promise<void> => {
-  await surveyCollection.insertMany([
-    {
-      question: 'any_question',
-      created_at: new Date(),
-      answers: [
-        {
-          answer: 'any_answer'
-        },
-      ]
-    },
-    {
-      question: 'other_question',
-      created_at: new Date(),
-      answers: [
-        {
-          answer: 'other_answer'
-        },
-      ]
-    }])
-}
-
 describe('Survey Result Routes', () => {
 
   beforeAll(async () => {
@@ -84,5 +62,29 @@ describe('Survey Result Routes', () => {
         })
         .expect(403)
     });
+  });
+
+  test('should return 200 on save survey result with accessToken', async () => {
+    const accessToken = await makeFakeAccount()
+
+    const res = await surveyCollection.insertOne({
+      question: 'any_question',
+      created_at: new Date(),
+      answers: [
+        {
+          answer: 'any_answer'
+        },
+      ]
+    })
+
+    const surveyId = res.insertedId.toString()
+
+    await request(app)
+      .put(`/api/v1/surveys/${surveyId}/results`)
+      .set('x-access-token', accessToken)
+      .send({
+        answer: 'any_answer'
+      })
+      .expect(200)
   });
 });
