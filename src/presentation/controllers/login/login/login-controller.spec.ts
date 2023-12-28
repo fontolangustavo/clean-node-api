@@ -1,27 +1,9 @@
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/http-helper';
-import { Authentication, AuthenticationParams, Validation } from './login-controller-protocols'
+import { Authentication, Validation } from './login-controller-protocols'
 import { MissingParamError } from '@/presentation/errors';
 import { LoginController } from './login-controller';
-
-const makeValidation = (): Validation => {
-  class ValidationStub implements Validation {
-    validate(input: any): Error | null {
-      return null
-    }
-  }
-
-  return new ValidationStub()
-}
-
-const makeAuthentication = (): Authentication => {
-  class AuthenticationStub implements Authentication {
-    async auth(authentication: AuthenticationParams): Promise<string | null> {
-      return 'any_token'
-    }
-  }
-
-  return new AuthenticationStub()
-}
+import { mockAuthentication } from '@/presentation/test';
+import { mockValidation } from '@/presentation/test';
 
 type SutTypes = {
   sut: LoginController,
@@ -29,10 +11,9 @@ type SutTypes = {
   validationStub: Validation
 }
 
-
 const makeSut = (): SutTypes => {
-  const authenticationStub = makeAuthentication()
-  const validationStub = makeValidation()
+  const authenticationStub = mockAuthentication()
+  const validationStub = mockValidation()
 
   const sut = new LoginController(authenticationStub, validationStub)
 

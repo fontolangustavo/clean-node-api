@@ -1,44 +1,8 @@
 import { badRequest, forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 import { EmailInUseError, MissingParamError, ServerError } from '@/presentation/errors'
 import { SignUpController } from './signup-controller'
-import type { AddAccount, AddAccountParams, AccountModel, Validation, Authentication, AuthenticationParams } from './signup-controller-protocols'
-
-const makeAddAccount = (): AddAccount => {
-  class AddAccountStub implements AddAccount {
-    async add(account: AddAccountParams): Promise<AccountModel> {
-      const fakeAccount = {
-        id: 'valid_id',
-        name: 'valid_name',
-        email: 'valid_email@email.com',
-        password: 'valid_password'
-      }
-
-      return await (Promise.resolve((fakeAccount)))
-    }
-  }
-
-  return new AddAccountStub()
-}
-
-const makeAuthentication = (): Authentication => {
-  class AuthenticationStub implements Authentication {
-    async auth(authentication: AuthenticationParams): Promise<string> {
-      return 'any_token'
-    }
-  }
-
-  return new AuthenticationStub()
-}
-
-const makeValidation = (): Validation => {
-  class ValidationStub implements Validation {
-    validate(input: any): Error | null {
-      return null
-    }
-  }
-
-  return new ValidationStub()
-}
+import type { AddAccount, Validation, Authentication } from './signup-controller-protocols'
+import { mockAuthentication, mockValidation, mockAddAccount } from '@/presentation/test'
 
 type SutTypes = {
   sut: SignUpController
@@ -48,9 +12,9 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const addAccountStub = makeAddAccount()
-  const validationStub = makeValidation()
-  const authenticationStub = makeAuthentication()
+  const addAccountStub = mockAddAccount()
+  const validationStub = mockValidation()
+  const authenticationStub = mockAuthentication()
   const sut = new SignUpController(addAccountStub, validationStub, authenticationStub)
 
   return {
