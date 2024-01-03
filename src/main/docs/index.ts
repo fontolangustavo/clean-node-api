@@ -8,7 +8,8 @@ import {
   surveySchema,
   surveysSchema,
   apiKeyAuthSchema,
-  singupParamsSchema
+  singupParamsSchema,
+  addSurveyParamsSchema
 } from './schemas'
 
 import {
@@ -55,7 +56,8 @@ export default {
     surveys: surveysSchema,
     survey: surveySchema,
     surveyAnswer: surveyAnswerSchema,
-    signupParams: singupParamsSchema
+    signupParams: singupParamsSchema,
+    addSurveyParams: addSurveyParamsSchema,
   },
   components: {
     securitySchemes: {
