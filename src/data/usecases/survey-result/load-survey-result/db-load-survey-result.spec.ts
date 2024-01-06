@@ -3,16 +3,35 @@ import { SurveyResultModel } from "../save-survey-result/db-save-survey-result.p
 import { LoadSurveyResultRepository } from '@/data/protocols/db/survey-result/load-survey-result-repository'
 import { DbLoadSurveyResult } from "./db-load-survey-result";
 
+const makeLoadSurveyResultRepositoryStub = (): LoadSurveyResultRepository => {
+  class LoadSurveyResultRepositoryStub implements LoadSurveyResultRepository {
+    async loadBySurveyId(survey_id: string): Promise<SurveyResultModel> {
+      return Promise.resolve(mockFakeSurveyResult())
+    }
+  }
+
+  return new LoadSurveyResultRepositoryStub()
+}
+
+type SutType = {
+  sut: DbLoadSurveyResult
+  loadSurveyResultRepositoryStub: LoadSurveyResultRepository
+}
+
+const makeSut = (): SutType => {
+  const loadSurveyResultRepositoryStub = makeLoadSurveyResultRepositoryStub()
+  const sut = new DbLoadSurveyResult(loadSurveyResultRepositoryStub)
+
+  return {
+    sut,
+    loadSurveyResultRepositoryStub
+  }
+}
+
 describe('DbLoadSurveyResult Usecase', () => {
   test('should call LoadSurveyResultRepository', async () => {
-    class LoadSurveyResultRepositoryStub implements LoadSurveyResultRepository {
-      async loadBySurveyId(survey_id: string): Promise<SurveyResultModel> {
-        return Promise.resolve(mockFakeSurveyResult())
-      }
-    }
 
-    const loadSurveyResultRepositoryStub = new LoadSurveyResultRepositoryStub()
-    const sut = new DbLoadSurveyResult(loadSurveyResultRepositoryStub)
+    const { sut, loadSurveyResultRepositoryStub } = makeSut()
 
     const loadBySurveyIdSpy = jest.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId')
 
