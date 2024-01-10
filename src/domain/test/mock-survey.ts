@@ -4,12 +4,16 @@ import { AddSurveyParams } from "@/domain/usecases/survey/add-survey";
 export const mockFakeSurvey = (): SurveyModel => (
   {
     id: 'any_id',
-    question: 'any_questions',
+    question: 'any_question',
     created_at: new Date(),
     answers: [
       {
         image: 'any_image',
         answer: 'any_answer'
+      },
+      {
+        image: 'any_image',
+        answer: 'other_answer'
       },
     ],
   }
@@ -18,7 +22,7 @@ export const mockFakeSurvey = (): SurveyModel => (
 export const mockFakeSurveys = (): SurveyModel[] => ([
   {
     id: 'any_id',
-    question: 'any_questions',
+    question: 'any_question',
     created_at: new Date(),
     answers: [
       {
@@ -29,11 +33,11 @@ export const mockFakeSurveys = (): SurveyModel[] => ([
   },
   {
     id: 'any_id',
-    question: 'other_questions',
+    question: 'other_question',
     created_at: new Date(),
     answers: [
       {
-        image: 'other_image',
+        image: 'any_image',
         answer: 'other_answer'
       },
     ],
