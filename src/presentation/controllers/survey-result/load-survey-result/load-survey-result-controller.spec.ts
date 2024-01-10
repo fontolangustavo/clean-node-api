@@ -1,20 +1,15 @@
 import { mockLoadSurveyById, mockLoadSurveyResult } from "@/presentation/test";
 import { LoadSurveyResultController } from "./load-survey-result-controller";
 import { HttpRequest, LoadSurveyById, LoadSurveyResult } from "./load-survey-result-controller-protocols";
-import { forbidden, serverError } from "@/presentation/helpers/http/http-helper";
+import { forbidden, ok, serverError } from "@/presentation/helpers/http/http-helper";
 import { InvalidParamError } from "@/presentation/errors";
+import { mockFakeSurveyResult } from "@/domain/test";
 
 
 const makeFakeRequest = (): HttpRequest => ({
   params: {
     surveyId: 'any_id'
   },
-  // body: {
-  //   answer: 'any_answer'
-  // },
-  // account: {
-  //   id: 'any_account_id'
-  // }
 })
 
 type SutTypes = {
@@ -74,5 +69,13 @@ describe('LoadSurveyResult Controller', () => {
     await sut.handle(makeFakeRequest())
 
     expect(loadSurveyResultSpy).toHaveBeenCalledWith('any_id')
+  });
+
+  test('should call LoadSurveyResult with correct value', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+
+    expect(httpResponse).toEqual(ok(mockFakeSurveyResult()))
   });
 });
