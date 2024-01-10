@@ -1,6 +1,5 @@
 import MockDate from 'mockdate'
 
-import { SurveyResultModel } from "@/domain/models/survey-result";
 import { forbidden, serverError } from "@/presentation/helpers/http/http-helper";
 import { InvalidParamError } from "@/presentation/errors";
 import {
