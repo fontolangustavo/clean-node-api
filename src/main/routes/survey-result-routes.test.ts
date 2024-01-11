@@ -96,9 +96,27 @@ describe('Survey Result Routes', () => {
       await request(app)
         .get('/api/v1/surveys/any_id/results')
         .expect(403)
+    });
 
-      expect(true).toBeTruthy()
+    test('should return 200 on save survey result with accessToken', async () => {
+      const accessToken = await makeFakeAccount()
 
+      const res = await surveyCollection.insertOne({
+        question: 'any_question',
+        created_at: new Date(),
+        answers: [
+          {
+            answer: 'any_answer'
+          },
+        ]
+      })
+
+      const surveyId = res.insertedId.toString()
+
+      await request(app)
+        .get(`/api/v1/surveys/${surveyId}/results`)
+        .set('x-access-token', accessToken)
+        .expect(200)
     });
   });
 
