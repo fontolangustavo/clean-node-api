@@ -33,9 +33,7 @@ export class SignUpController implements Controller {
         password
       })
 
-      return ok({
-        accessToken
-      })
+      return ok(accessToken)
     } catch (error) {
       return serverError(error)
     }

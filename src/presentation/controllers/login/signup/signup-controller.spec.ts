@@ -89,7 +89,7 @@ describe('SignUp Controller', () => {
     const { sut } = makeSut()
     const httpRequest = {
       body: {
-        name: 'valid_name',
+        name: 'any_name',
         email: 'valid_email@email.com',
         password: 'valid_password',
         passwordConfirmation: 'valid_password'
@@ -98,7 +98,8 @@ describe('SignUp Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(ok({
-      accessToken: 'any_token'
+      accessToken: 'any_token',
+      name: 'any_name'
     }))
   })
 

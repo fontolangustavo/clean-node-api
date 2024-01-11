@@ -17,14 +17,12 @@ export class LoginController implements Controller {
 
       const { email, password } = httpRequest.body
 
-      const token = await this.authentication.auth({ email, password })
-      if (!token) {
+      const authentication = await this.authentication.auth({ email, password })
+      if (!authentication) {
         return unauthorized()
       }
 
-      return ok({
-        token
-      })
+      return ok(authentication)
     } catch (error) {
       return serverError(error)
     }
