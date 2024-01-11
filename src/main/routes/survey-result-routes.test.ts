@@ -1,4 +1,6 @@
 import request from 'supertest'
+import MockDate from 'mockdate'
+
 import app from '../config/app'
 import { MongoHelper } from '../../infra/db/mongodb/helpers/mongo-helper';
 import { Collection, ObjectId } from 'mongodb';
@@ -36,12 +38,13 @@ const makeFakeAccount = async (role?: string): Promise<string> => {
 }
 
 describe('Survey Result Routes', () => {
-
   beforeAll(async () => {
+    MockDate.set(new Date())
     await MongoHelper.connect(process.env.MONGO_URL ?? '')
   })
 
   afterAll(async () => {
+    MockDate.reset()
     await MongoHelper.disconnect()
   })
 
@@ -62,29 +65,41 @@ describe('Survey Result Routes', () => {
         })
         .expect(403)
     });
-  });
 
-  test('should return 200 on save survey result with accessToken', async () => {
-    const accessToken = await makeFakeAccount()
+    test('should return 200 on save survey result with accessToken', async () => {
+      const accessToken = await makeFakeAccount()
 
-    const res = await surveyCollection.insertOne({
-      question: 'any_question',
-      created_at: new Date(),
-      answers: [
-        {
-          answer: 'any_answer'
-        },
-      ]
-    })
-
-    const surveyId = res.insertedId.toString()
-
-    await request(app)
-      .put(`/api/v1/surveys/${surveyId}/results`)
-      .set('x-access-token', accessToken)
-      .send({
-        answer: 'any_answer'
+      const res = await surveyCollection.insertOne({
+        question: 'any_question',
+        created_at: new Date(),
+        answers: [
+          {
+            answer: 'any_answer'
+          },
+        ]
       })
-      .expect(200)
+
+      const surveyId = res.insertedId.toString()
+
+      await request(app)
+        .put(`/api/v1/surveys/${surveyId}/results`)
+        .set('x-access-token', accessToken)
+        .send({
+          answer: 'any_answer'
+        })
+        .expect(200)
+    });
   });
+
+  describe('GET /surveys/:surveyId/results', () => {
+    test('should return 403 on load survey without accessToken', async () => {
+      await request(app)
+        .get('/api/v1/surveys/any_id/results')
+        .expect(403)
+
+      expect(true).toBeTruthy()
+
+    });
+  });
+
 });
