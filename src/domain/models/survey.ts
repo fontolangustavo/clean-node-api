@@ -6,6 +6,7 @@ export type SurveyAnswerModel = {
 export type SurveyModel = {
   id: string
   question: string
-  answers: SurveyAnswerModel[],
+  answers: SurveyAnswerModel[]
+  didAnswer?: boolean
   created_at: Date
 }

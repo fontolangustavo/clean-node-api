@@ -17,5 +17,9 @@ export const surveySchema = {
     created_at: {
       type: 'string',
     },
-  }
+    didAnswer: {
+      type: 'boolean'
+    }
+  },
+  required: ['id', 'question', 'answers', 'created_at', 'didAnswer']
 }
