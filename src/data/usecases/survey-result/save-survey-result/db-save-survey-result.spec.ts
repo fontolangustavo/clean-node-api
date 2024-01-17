@@ -63,7 +63,7 @@ describe('DbSaveSurveyResult Usecase', () => {
     const survey = mockFakeSurveyResultData()
     await sut.save(survey)
 
-    expect(loadBySurveyIdSpy).toHaveBeenCalledWith(survey.surveyId)
+    expect(loadBySurveyIdSpy).toHaveBeenCalledWith(survey.surveyId, survey.accountId)
   });
 
   test('should throw if LoadSurveyResultRepository throws', async () => {

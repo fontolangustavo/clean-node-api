@@ -9,13 +9,15 @@ export const mockFakeSurveyResult = (): SurveyResultModel => ({
       answer: 'any_answer',
       image: 'any_image',
       count: 0,
-      percent: 0
+      percent: 0,
+      isCurrentAccountAnswer: false
     },
     {
       answer: 'other_answer',
       image: 'any_image',
       count: 0,
-      percent: 0
+      percent: 0,
+      isCurrentAccountAnswer: false
     }
   ],
   created_at: new Date()

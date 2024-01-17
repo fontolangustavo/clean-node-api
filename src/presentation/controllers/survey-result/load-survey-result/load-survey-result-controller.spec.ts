@@ -1,3 +1,5 @@
+import MockDate from 'mockdate'
+
 import { mockLoadSurveyById, mockLoadSurveyResult } from "@/presentation/test";
 import { LoadSurveyResultController } from "./load-survey-result-controller";
 import { HttpRequest, LoadSurveyById, LoadSurveyResult } from "./load-survey-result-controller-protocols";
@@ -7,6 +9,9 @@ import { mockFakeSurveyResult } from "@/domain/test";
 
 
 const makeFakeRequest = (): HttpRequest => ({
+  account: {
+    id: 'any_account_id'
+  },
   params: {
     surveyId: 'any_id'
   },
@@ -31,6 +36,14 @@ const makeSut = (): SutTypes => {
 }
 
 describe('LoadSurveyResult Controller', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   test('should call LoadSurveyById with correct value', async () => {
     const { sut, loadSurveyByIdStub } = makeSut()
 
@@ -61,14 +74,14 @@ describe('LoadSurveyResult Controller', () => {
     expect(httpResponse).toEqual(serverError(new Error()))
   });
 
-  test('should call LoadSurveyResult with correct value', async () => {
+  test('should call LoadSurveyResult with correct values', async () => {
     const { sut, loadSurveyResultStub } = makeSut()
 
     const loadSurveyResultSpy = jest.spyOn(loadSurveyResultStub, 'load')
 
     await sut.handle(makeFakeRequest())
 
-    expect(loadSurveyResultSpy).toHaveBeenCalledWith('any_id')
+    expect(loadSurveyResultSpy).toHaveBeenCalledWith('any_id', 'any_account_id')
   });
 
   test('should call LoadSurveyResult with correct value', async () => {

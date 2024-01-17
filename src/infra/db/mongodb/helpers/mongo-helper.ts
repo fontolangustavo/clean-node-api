@@ -18,8 +18,13 @@ export const MongoHelper = {
     return this.client.db().collection(name)
   },
   map: (data: any): any => {
-    const { _id, insertedId, ...dataWithoutId } = data
-    return Object.assign({ ...dataWithoutId, id: _id || insertedId })
+    if (data) {
+      const { _id, insertedId, ...dataWithoutId } = data
+
+      return Object.assign({ ...dataWithoutId, id: _id || insertedId })
+    }
+
+    return null
   },
   mapCollection: (collection: any[]): any[] => {
     return collection.map((item) => MongoHelper.map(item))
