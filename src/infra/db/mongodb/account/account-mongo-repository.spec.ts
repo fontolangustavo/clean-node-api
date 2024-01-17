@@ -104,7 +104,7 @@ describe('Account Mongo Repository', () => {
       expect(account.email).toBe('any_email@email.com')
       expect(account.password).toBe('any_password')
     })
-    
+
     test('should return an account on loadByToken with admin role', async () => {
       const sut = makeSut()
       await accountCollection.insertOne({
@@ -123,7 +123,7 @@ describe('Account Mongo Repository', () => {
       expect(account.email).toBe('any_email@email.com')
       expect(account.password).toBe('any_password')
     })
-    
+
     test('should return an account on loadByToken with if user is admin', async () => {
       const sut = makeSut()
       await accountCollection.insertOne({
@@ -142,7 +142,7 @@ describe('Account Mongo Repository', () => {
       expect(account.email).toBe('any_email@email.com')
       expect(account.password).toBe('any_password')
     })
-    
+
     test('should return null on loadByToken with invalid role', async () => {
       const sut = makeSut()
       await accountCollection.insertOne({

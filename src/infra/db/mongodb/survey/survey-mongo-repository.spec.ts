@@ -94,8 +94,6 @@ describe('Survey Mongo Repository', () => {
         }]
       )
 
-
-      console.log(result)
       const surveyId = result.insertedIds[0]
 
       await surveyResultCollection.insertOne(
