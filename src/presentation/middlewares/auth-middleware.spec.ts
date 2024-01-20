@@ -5,10 +5,8 @@ import { AuthMiddleware } from './auth-middleware';
 import { mockAccountModel } from '@/domain/test';
 import { mockLoadAccountByToken } from '@/presentation/test';
 
-const makeFakeRequest = (): HttpRequest => ({
-  headers: {
-    'x-access-token': 'any_token'
-  }
+const makeFakeRequest = (): AuthMiddleware.Request => ({
+  accessToken: 'any_token'
 })
 
 type SutTypes = {

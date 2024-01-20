@@ -2,19 +2,17 @@ import MockDate from 'mockdate'
 
 import { mockLoadSurveyById, mockLoadSurveyResult } from "@/presentation/test";
 import { LoadSurveyResultController } from "./load-survey-result-controller";
-import { HttpRequest, LoadSurveyById, LoadSurveyResult } from "./load-survey-result-controller-protocols";
+import { LoadSurveyById, LoadSurveyResult } from "./load-survey-result-controller-protocols";
 import { forbidden, ok, serverError } from "@/presentation/helpers/http/http-helper";
 import { InvalidParamError } from "@/presentation/errors";
 import { mockFakeSurveyResult } from "@/domain/test";
 
 
-const makeFakeRequest = (): HttpRequest => ({
+const makeFakeRequest = (): LoadSurveyResultController.Request => ({
   account: {
     id: 'any_account_id'
   },
-  params: {
-    surveyId: 'any_id'
-  },
+  surveyId: 'any_id'
 })
 
 type SutTypes = {

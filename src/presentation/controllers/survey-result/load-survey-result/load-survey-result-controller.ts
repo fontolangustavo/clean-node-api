@@ -1,6 +1,5 @@
 import {
   Controller,
-  HttpRequest,
   HttpResponse,
   LoadSurveyById,
   LoadSurveyResult
@@ -14,10 +13,10 @@ export class LoadSurveyResultController implements Controller {
     private readonly loadSurveyResult: LoadSurveyResult
   ) { }
 
-  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(request: LoadSurveyResultController.Request): Promise<HttpResponse> {
     try {
-      const { id } = httpRequest.account
-      const { surveyId } = httpRequest.params
+      const { id } = request.account
+      const { surveyId } = request
 
       const survey = await this.loadSurveyById.loadById(surveyId)
 
@@ -31,5 +30,16 @@ export class LoadSurveyResultController implements Controller {
     } catch (error) {
       return serverError(error)
     }
+  }
+}
+
+export namespace LoadSurveyResultController {
+  export type Request = {
+    surveyId: string
+    account: AccountModel
+  }
+
+  type AccountModel = {
+    id: string
   }
 }

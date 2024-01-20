@@ -9,3 +9,13 @@ export interface AddAccountParams {
 export interface AddAccount {
   add: (account: AddAccountParams) => Promise<AccountModel | null>
 }
+
+export namespace AddAccount {
+  export type Params = {
+    name: string
+    email: string
+    password: string
+  }
+
+  export type Result = AccountModel
+}

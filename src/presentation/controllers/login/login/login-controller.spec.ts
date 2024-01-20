@@ -28,14 +28,12 @@ describe('Login Controller', () => {
   test('should call Authentication with correct values', async () => {
     const { sut, authenticationStub } = makeSut()
     const authSpy = jest.spyOn(authenticationStub, 'auth')
-    const httpRequest = {
-      body: {
-        email: 'any_email@email.com',
-        password: 'any_password'
-      }
+    const request = {
+      email: 'any_email@email.com',
+      password: 'any_password'
     }
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
     expect(authSpy).toHaveBeenCalledWith({
       email: 'any_email@email.com', password: 'any_password'
     })
@@ -46,14 +44,12 @@ describe('Login Controller', () => {
     const { sut, authenticationStub } = makeSut()
     jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.resolve(null))
 
-    const httpRequest = {
-      body: {
-        email: 'any_email@email.com',
-        password: 'any_password'
-      }
+    const request = {
+      email: 'any_email@email.com',
+      password: 'any_password'
     }
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(request)
 
     expect(httpResponse).toEqual(unauthorized())
   });
@@ -62,28 +58,24 @@ describe('Login Controller', () => {
     const { sut, authenticationStub } = makeSut()
     jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.reject(new Error()))
 
-    const httpRequest = {
-      body: {
-        email: 'any_email@email.com',
-        password: 'any_password'
-      }
+    const request = {
+      email: 'any_email@email.com',
+      password: 'any_password'
     }
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(request)
     expect(httpResponse).toEqual(serverError(new Error()))
   });
 
   test('should return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
 
-    const httpRequest = {
-      body: {
-        email: 'any_email@email.com',
-        password: 'any_password'
-      }
+    const request = {
+      email: 'any_email@email.com',
+      password: 'any_password'
     }
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(request)
     expect(httpResponse).toEqual(ok({
       accessToken: 'any_token',
       name: 'any_name'
@@ -94,17 +86,15 @@ describe('Login Controller', () => {
     const { sut, validationStub } = makeSut()
 
     const validateSpy = jest.spyOn(validationStub, 'validate')
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        email: 'valid_email@email.com',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
+    const request = {
+      name: 'any_name',
+      email: 'valid_email@email.com',
+      password: 'any_password',
+      passwordConfirmation: 'any_password'
     }
 
-    await sut.handle(httpRequest)
-    expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
+    await sut.handle(request)
+    expect(validateSpy).toHaveBeenCalledWith(request)
   })
 
   it('should return 400 if Validation returns an error', async () => {
@@ -112,15 +102,13 @@ describe('Login Controller', () => {
 
     jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
 
-    const httpRequest = {
-      body: {
-        name: 'valid_name',
-        email: 'valid_email@email.com',
-        password: 'valid_password',
-        passwordConfirmation: 'valid_password'
-      }
+    const request = {
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password',
+      passwordConfirmation: 'valid_password'
     }
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(request)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
 });

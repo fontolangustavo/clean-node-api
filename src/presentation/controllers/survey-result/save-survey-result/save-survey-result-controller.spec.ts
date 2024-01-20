@@ -10,13 +10,10 @@ import {
 import { SaveSurveyResultController } from "./save-survey-result-controller";
 import { mockLoadSurveyById, mockSaveSurveyResult } from '@/presentation/test';
 
-const makeFakeRequest = (): HttpRequest => ({
-  params: {
-    surveyId: 'any_survey_id'
-  },
-  body: {
-    answer: 'any_answer'
-  },
+const makeFakeRequest = (): SaveSurveyResultController.Request => ({
+
+  surveyId: 'any_survey_id',
+  answer: 'any_answer',
   account: {
     id: 'any_account_id'
   }
@@ -84,12 +81,8 @@ describe('SaveSurveyResultController', () => {
     const { sut } = makeSut()
 
     const httpResponse = await sut.handle({
-      params: {
-        surveyId: 'any_id'
-      },
-      body: {
-        answer: 'wrong_answer'
-      },
+      surveyId: 'any_id',
+      answer: 'wrong_answer',
       account: {
         id: 'any_id'
       }

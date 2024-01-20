@@ -4,17 +4,14 @@ import { AddSurveyController } from './add-survey-controller'
 import { badRequest, noContent, serverError } from '@/presentation/helpers/http/http-helper'
 import { mockAddSurvey, mockValidation } from "@/presentation/test";
 
-const makeFakeQuest = (): HttpRequest => ({
-  body: {
-    question: 'any_questions',
-    created_at: new Date(),
-    answers: [
-      {
-        image: 'any_image',
-        answer: 'any_answer'
-      },
-    ],
-  }
+const makeFakeQuest = (): AddSurveyController.Request => ({
+  question: 'any_questions',
+  answers: [
+    {
+      image: 'any_image',
+      answer: 'any_answer'
+    },
+  ],
 })
 
 type SutTypes = {
@@ -48,11 +45,11 @@ describe('AddSurvey Controller', () => {
     const { sut, validationStub } = makeSut()
 
     const validateSpy = jest.spyOn(validationStub, 'validate')
-    const httpRequest = makeFakeQuest()
+    const request = makeFakeQuest()
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
-    expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
+    expect(validateSpy).toHaveBeenCalledWith(request)
   });
 
   test('should return 400 if Validation fails', async () => {
@@ -69,11 +66,14 @@ describe('AddSurvey Controller', () => {
     const { sut, addSurveyStub } = makeSut()
 
     const addSpy = jest.spyOn(addSurveyStub, 'add')
-    const httpRequest = makeFakeQuest()
+    const request = makeFakeQuest()
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
-    expect(addSpy).toHaveBeenCalledWith(httpRequest.body)
+    expect(addSpy).toHaveBeenCalledWith({
+      ...request,
+      created_at: new Date()
+    })
   });
 
   test('should return 500 if AddSurvey throws', async () => {
