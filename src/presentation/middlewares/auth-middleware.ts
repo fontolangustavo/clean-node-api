@@ -20,7 +20,7 @@ export class AuthMiddleware implements Middleware {
         }
       }
 
-      return Promise.resolve(forbidden(new AccessDeniedError()))
+      return await Promise.resolve(forbidden(new AccessDeniedError()))
     } catch (error) {
       return serverError(error)
     }

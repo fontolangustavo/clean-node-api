@@ -51,7 +51,6 @@ export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRe
     return MongoHelper.mapCollection(surveys)
   }
 
-
   async loadById(id: string): Promise<SurveyModel> {
     const surveyCollection = await MongoHelper.getCollection('surveys')
 
@@ -59,5 +58,18 @@ export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRe
     const survey: SurveyModel = await surveyCollection.findOne({ _id: new ObjectId(id) })
 
     return survey && MongoHelper.map(survey)
+  }
+
+  async checkById(id: string): Promise<boolean> {
+    const surveyCollection = await MongoHelper.getCollection('surveys')
+
+    /* @ts-ignore */
+    const survey: SurveyModel = await surveyCollection.findOne({ _id: new ObjectId(id) }, {
+      projection: {
+        _id: 1
+      }
+    })
+
+    return survey !== null
   }
 }

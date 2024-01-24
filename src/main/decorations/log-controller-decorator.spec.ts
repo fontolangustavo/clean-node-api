@@ -14,7 +14,7 @@ const makeController = (): Controller => {
         }
       }
 
-      return Promise.resolve(httpResponse)
+      return await Promise.resolve(httpResponse)
     }
   }
 

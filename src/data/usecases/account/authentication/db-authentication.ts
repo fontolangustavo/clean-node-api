@@ -1,7 +1,5 @@
 import {
-  AuthenticationModel,
   Authentication,
-  AuthenticationParams,
   UpdateAccessTokenRepository,
   LoadAccountByEmailRepository,
   HashComparer,
@@ -16,7 +14,7 @@ export class DbAuthentication implements Authentication {
     private readonly updateAccessTokenRepository: UpdateAccessTokenRepository
   ) { }
 
-  async auth(authentication: AuthenticationParams): Promise<AuthenticationModel | null> {
+  async auth(authentication: Authentication.Params): Promise<Authentication.Result | null> {
     const account = await this.loadAccountByEmailRepository.loadByEmail(authentication.email)
 
     if (account) {

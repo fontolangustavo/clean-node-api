@@ -1,5 +1,6 @@
 import { AddSurvey } from '@/domain/usecases/survey/add-survey'
 import { LoadSurveyById } from '@/domain/usecases/survey/load-survey-by-id'
+import { CheckSurveyById } from '@/domain/usecases/survey/check-survey-by-id'
 import { LoadSurveys } from '@/domain/usecases/survey/load-surveys'
 import { SaveSurveyResult, SaveSurveyResultParams } from '@/domain/usecases/survey-result/save-survey-result'
 import { SurveyModel } from '@/domain/models/survey'
@@ -10,7 +11,7 @@ import { LoadSurveyResult } from '@/domain/usecases/survey-result/load-survey-re
 export const mockAddSurvey = (): AddSurvey => {
   class AddSurveyStub implements AddSurvey {
     async add(data: AddSurvey.Params): Promise<void> {
-      return Promise.resolve()
+      return await Promise.resolve()
     }
   }
 
@@ -20,7 +21,7 @@ export const mockAddSurvey = (): AddSurvey => {
 export const mockLoadSurveys = (): LoadSurveys => {
   class LoadSurveysStub implements LoadSurveys {
     async load(accountId: string): Promise<SurveyModel[]> {
-      return Promise.resolve(mockFakeSurveys())
+      return await Promise.resolve(mockFakeSurveys())
     }
   }
 
@@ -30,17 +31,27 @@ export const mockLoadSurveys = (): LoadSurveys => {
 export const mockLoadSurveyById = (): LoadSurveyById => {
   class LoadSurveyByIdStub implements LoadSurveyById {
     async loadById(id: string): Promise<SurveyModel> {
-      return Promise.resolve(mockFakeSurvey())
+      return await Promise.resolve(mockFakeSurvey())
     }
   }
 
   return new LoadSurveyByIdStub()
 }
 
+export const mockCheckSurveyById = (): CheckSurveyById => {
+  class CheckSurveyByIdStub implements CheckSurveyById {
+    async checkById(id: string): Promise<CheckSurveyById.Result> {
+      return await Promise.resolve(true)
+    }
+  }
+
+  return new CheckSurveyByIdStub()
+}
+
 export const mockSaveSurveyResult = (): SaveSurveyResult => {
   class SaveSurveyResultStub implements SaveSurveyResult {
     async save(data: SaveSurveyResultParams): Promise<SurveyResultModel> {
-      return Promise.resolve(mockFakeSurveyResult())
+      return await Promise.resolve(mockFakeSurveyResult())
     }
   }
 
@@ -50,7 +61,7 @@ export const mockSaveSurveyResult = (): SaveSurveyResult => {
 export const mockLoadSurveyResult = (): LoadSurveyResult => {
   class LoadSurveyResultStub implements LoadSurveyResult {
     async load(surveyId: string, accountId: string): Promise<SurveyResultModel> {
-      return Promise.resolve(mockFakeSurveyResult())
+      return await Promise.resolve(mockFakeSurveyResult())
     }
   }
 

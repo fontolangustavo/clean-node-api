@@ -1,4 +1,3 @@
-import { AuthenticationParams } from "@/domain/usecases/account/authentication";
 import { HashComparer } from "@/data/protocols/criptography/hash-comparer";
 import { LoadAccountByEmailRepository } from "@/data/protocols/db/account/load-account-by-email-repository";
 import { UpdateAccessTokenRepository } from "@/data/protocols/db/account/update-access-token-repository";

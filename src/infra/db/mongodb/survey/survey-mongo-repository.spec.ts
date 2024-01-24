@@ -1,4 +1,5 @@
 import MockDate from 'mockdate'
+import FakeObjectId from 'bson-objectid'
 
 import { Collection, ObjectId } from 'mongodb'
 import { MongoHelper } from '../helpers/mongo-helper'
@@ -20,7 +21,9 @@ const makeAccount = async (): Promise<AccountModel> => {
     password: 'any_password'
   })
 
-  return MongoHelper.map(await accountCollection.findOne<AccountModel>({ _id: res.insertedId }))
+  const account = await accountCollection.findOne<AccountModel>({ _id: res.insertedId })
+
+  return MongoHelper.map(account)
 }
 
 describe('Survey Mongo Repository', () => {
@@ -148,7 +151,37 @@ describe('Survey Mongo Repository', () => {
       expect(survey).toBeTruthy()
       expect(survey.id).toBeTruthy()
     })
-
   });
 
+
+  describe('checkById()', () => {
+    test('should return true if survey exists', async () => {
+      const sut = makeSut()
+
+      const res = await surveyCollection.insertOne(
+        {
+          question: 'any_question',
+          answers: [
+            {
+              answer: 'any_answer'
+            },
+          ],
+          created_at: new Date()
+        }
+      )
+
+      const id = res.insertedId.toString()
+      const exists = await sut.checkById(id)
+
+      expect(exists).toBeTruthy()
+    })
+
+    test('should return false if survey not exists', async () => {
+      const sut = makeSut()
+
+      const exists = await sut.checkById(FakeObjectId("54495ad94c934721ede76d90").toHexString())
+
+      expect(exists).toBeFalsy()
+    })
+  });
 })

@@ -1,7 +1,7 @@
 import {
   Controller,
   HttpResponse,
-  LoadSurveyById,
+  CheckSurveyById,
   LoadSurveyResult
 } from "./load-survey-result-controller-protocols";
 import { InvalidParamError } from "@/presentation/errors";
@@ -9,7 +9,7 @@ import { forbidden, ok, serverError } from "@/presentation/helpers/http/http-hel
 
 export class LoadSurveyResultController implements Controller {
   constructor(
-    private readonly loadSurveyById: LoadSurveyById,
+    private readonly checkSurveyById: CheckSurveyById,
     private readonly loadSurveyResult: LoadSurveyResult
   ) { }
 
@@ -18,9 +18,9 @@ export class LoadSurveyResultController implements Controller {
       const { id } = request.account
       const { surveyId } = request
 
-      const survey = await this.loadSurveyById.loadById(surveyId)
+      const exists = await this.checkSurveyById.checkById(surveyId)
 
-      if (!survey) {
+      if (!exists) {
         return forbidden(new InvalidParamError('surveyId'))
       }
 
