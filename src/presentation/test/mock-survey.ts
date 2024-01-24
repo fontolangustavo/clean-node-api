@@ -1,5 +1,4 @@
 import { AddSurvey } from '@/domain/usecases/survey/add-survey'
-import { LoadSurveyById } from '@/domain/usecases/survey/load-survey-by-id'
 import { CheckSurveyById } from '@/domain/usecases/survey/check-survey-by-id'
 import { LoadSurveys } from '@/domain/usecases/survey/load-surveys'
 import { SaveSurveyResult, SaveSurveyResultParams } from '@/domain/usecases/survey-result/save-survey-result'
@@ -7,6 +6,7 @@ import { SurveyModel } from '@/domain/models/survey'
 import { SurveyResultModel } from '@/domain/models/survey-result'
 import { mockFakeSurvey, mockFakeSurveyResult, mockFakeSurveys } from '@/domain/test'
 import { LoadSurveyResult } from '@/domain/usecases/survey-result/load-survey-result'
+import { LoadAnswersBySurvey } from '../controllers/survey-result/save-survey-result/save-survey-result-controller-protocols'
 
 export const mockAddSurvey = (): AddSurvey => {
   class AddSurveyStub implements AddSurvey {
@@ -28,14 +28,14 @@ export const mockLoadSurveys = (): LoadSurveys => {
   return new LoadSurveysStub()
 }
 
-export const mockLoadSurveyById = (): LoadSurveyById => {
-  class LoadSurveyByIdStub implements LoadSurveyById {
-    async loadById(id: string): Promise<SurveyModel> {
-      return await Promise.resolve(mockFakeSurvey())
+export const mockLoadAnswersBySurvey = (): LoadAnswersBySurvey => {
+  class LoadAnswersBySurveyStub implements LoadAnswersBySurvey {
+    async loadAnswers(id: string): Promise<LoadAnswersBySurvey.Result> {
+      return await Promise.resolve(mockFakeSurvey().answers.map((item) => item.answer))
     }
   }
 
-  return new LoadSurveyByIdStub()
+  return new LoadAnswersBySurveyStub()
 }
 
 export const mockCheckSurveyById = (): CheckSurveyById => {

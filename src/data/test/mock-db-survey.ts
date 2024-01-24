@@ -1,5 +1,5 @@
 import { AddSurveyRepository } from "@/data/protocols/db/survey/add-survey-repository"
-import { LoadSurveyByIdRepository, SurveyModel } from "@/data/usecases/load-survey-by-id/db-load-survey-by-id.protocols"
+import { LoadSurveyByIdRepository, SurveyModel } from "@/data/usecases/load-survey-by-id/db-load-answers-by-survey.protocols"
 import { mockFakeSurvey, mockFakeSurveys } from "@/domain/test"
 import { LoadSurveysRepository } from "../protocols/db/survey/load-surveys-repository"
 import { CheckSurveyByIdRepository } from "../protocols/db/survey/check-survey-by-id-repository"
