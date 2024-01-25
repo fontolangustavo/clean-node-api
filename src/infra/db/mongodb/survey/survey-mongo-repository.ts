@@ -1,18 +1,19 @@
-import { LoadSurveysRepository, SurveyModel } from '@/data/usecases/survey/load-surveys/db-load-surveys.protocols'
-import { AddSurveyRepository } from '@/data/protocols/db/survey/add-survey-repository'
-import { AddSurvey } from '@/domain/usecases/survey/add-survey'
-import { MongoHelper, QueryBuilder } from '../helpers'
-import { LoadAnswersBySurveyRepository, LoadSurveyByIdRepository } from '@/data/usecases/load-survey-by-id/db-load-answers-by-survey.protocols'
 import { ObjectId } from 'mongodb'
 
+import { LoadSurveysRepository } from '@/data/usecases/survey/load-surveys/db-load-surveys.protocols'
+import { AddSurveyRepository } from '@/data/protocols/db/survey/add-survey-repository'
+
+import { LoadAnswersBySurveyRepository, LoadSurveyByIdRepository } from '@/data/usecases/load-survey-by-id/db-load-answers-by-survey.protocols'
+import { MongoHelper, QueryBuilder } from '../helpers'
+
 export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRepository, LoadSurveyByIdRepository, LoadAnswersBySurveyRepository {
-  async add(data: AddSurvey.Params): Promise<void> {
+  async add(data: AddSurveyRepository.Params): Promise<void> {
     const surveyCollection = await MongoHelper.getCollection('surveys')
 
     await surveyCollection.insertOne(data)
   }
 
-  async load(accountId: string): Promise<SurveyModel[]> {
+  async load(accountId: string): Promise<LoadSurveysRepository.Result> {
     const surveyCollection = await MongoHelper.getCollection('surveys')
 
     const query = new QueryBuilder()
@@ -45,17 +46,15 @@ export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRe
       })
       .build()
 
-    /* @ts-ignore */
-    const surveys: SurveyModel[] = await surveyCollection.aggregate(query).toArray()
+    const surveys = await surveyCollection.aggregate(query).toArray()
 
     return MongoHelper.mapCollection(surveys)
   }
 
-  async loadById(id: string): Promise<SurveyModel> {
+  async loadById(id: string): Promise<LoadSurveyByIdRepository.Result> {
     const surveyCollection = await MongoHelper.getCollection('surveys')
 
-    /* @ts-ignore */
-    const survey: SurveyModel = await surveyCollection.findOne({ _id: new ObjectId(id) })
+    const survey = await surveyCollection.findOne({ _id: new ObjectId(id) })
 
     return survey && MongoHelper.map(survey)
   }
@@ -81,8 +80,7 @@ export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRe
   async checkById(id: string): Promise<boolean> {
     const surveyCollection = await MongoHelper.getCollection('surveys')
 
-    /* @ts-ignore */
-    const survey: SurveyModel = await surveyCollection.findOne({ _id: new ObjectId(id) }, {
+    const survey = await surveyCollection.findOne({ _id: new ObjectId(id) }, {
       projection: {
         _id: 1
       }
