@@ -1,7 +1,7 @@
 import { AddSurvey } from '@/domain/usecases/survey/add-survey'
 import { CheckSurveyById } from '@/domain/usecases/survey/check-survey-by-id'
 import { LoadSurveys } from '@/domain/usecases/survey/load-surveys'
-import { SaveSurveyResult, SaveSurveyResultParams } from '@/domain/usecases/survey-result/save-survey-result'
+import { SaveSurveyResult } from '@/domain/usecases/survey-result/save-survey-result'
 import { SurveyModel } from '@/domain/models/survey'
 import { SurveyResultModel } from '@/domain/models/survey-result'
 import { mockFakeSurvey, mockFakeSurveyResult, mockFakeSurveys } from '@/domain/test'
@@ -50,7 +50,7 @@ export const mockCheckSurveyById = (): CheckSurveyById => {
 
 export const mockSaveSurveyResult = (): SaveSurveyResult => {
   class SaveSurveyResultStub implements SaveSurveyResult {
-    async save(data: SaveSurveyResultParams): Promise<SurveyResultModel> {
+    async save(data: SaveSurveyResult.Params): Promise<SaveSurveyResult.Result> {
       return await Promise.resolve(mockFakeSurveyResult())
     }
   }
