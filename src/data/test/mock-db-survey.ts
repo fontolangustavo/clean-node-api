@@ -1,5 +1,5 @@
 import { AddSurveyRepository } from "@/data/protocols/db/survey/add-survey-repository"
-import { LoadSurveyByIdRepository, SurveyModel } from "@/data/usecases/load-survey-by-id/db-load-answers-by-survey.protocols"
+import { LoadAnswersBySurveyRepository, LoadSurveyByIdRepository, SurveyModel } from "@/data/usecases/load-survey-by-id/db-load-answers-by-survey.protocols"
 import { mockFakeSurvey, mockFakeSurveys } from "@/domain/test"
 import { LoadSurveysRepository } from "../protocols/db/survey/load-surveys-repository"
 import { CheckSurveyByIdRepository } from "../protocols/db/survey/check-survey-by-id-repository"
@@ -22,6 +22,16 @@ export const mockLoadSurveyByIdRepository = (): LoadSurveyByIdRepository => {
   }
 
   return new LoadSurveyByIdRepositoryStub()
+}
+
+export const mockLoadAnswersBySurveyRepository = (): LoadAnswersBySurveyRepository => {
+  class LoadAnswersBySurveyRepositoryStub implements LoadAnswersBySurveyRepository {
+    async loadAnswers(id: string): Promise<LoadAnswersBySurveyRepository.Result> {
+      return await Promise.resolve(mockFakeSurvey().answers.map(item => item.answer))
+    }
+  }
+
+  return new LoadAnswersBySurveyRepositoryStub()
 }
 
 export const mockCheckSurveyByIdRepository = (): CheckSurveyByIdRepository => {
