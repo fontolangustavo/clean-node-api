@@ -1,6 +1,6 @@
 import { Express } from 'express'
 import { bodyParser, contentType, cors } from '../middlewares'
-import setupSwagger from './config-swagger'
+import setupSwagger from './swagger'
 
 export default (app: Express): void => {
   setupSwagger(app)
