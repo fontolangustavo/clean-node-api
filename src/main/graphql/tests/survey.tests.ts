@@ -114,5 +114,16 @@ describe('Surveys GraphQL', async () => {
 
       expect(response.surveys.length).toBe(2)
     })
+
+    test('should return AccessDeniedError if no token is provided', async () => {
+      makeFakeSurveys()
+
+      const { query } = createTestClient({ apolloServer })
+
+      const response: any = await query(surveysQuery)
+
+      expect(response.data).toBeFalsy()
+      expect(response.errors[0].message).toBe('Access denied')
+    })
   });
 });
