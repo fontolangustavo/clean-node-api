@@ -27,18 +27,17 @@ describe('Login GraphQL', () => {
     await accountCollection.deleteMany({})
   })
   describe('Login Query', () => {
-    test('should return an Account on valid credentions ', async () => {
-      const loginQuery = gql`
-        query login($email: String!, $password: String!) {
-          login(email: $email, password: $password) {
-            accessToken
-            name
-          }
+    const loginQuery = gql`
+      query login($email: String!, $password: String!) {
+        login(email: $email, password: $password) {
+          accessToken
+          name
         }
-      `
+      }
+    `
 
+    test('should return an Account on valid credentions ', async () => {
       const password = await hash('any_password', 12)
-
       await accountCollection.insertOne({
         name: 'any_name',
         email: 'any_email@gmail.com',
@@ -59,6 +58,23 @@ describe('Login GraphQL', () => {
       expect(response.data.login.accessToken).toBeTruthy()
       expect(response.data.login.name).toBe
         ('any_name')
+    })
+
+    test('should return UnauthorizedError on invalid credentions ', async () => {
+      const { query } = createTestClient({
+        apolloServer
+      })
+
+      const response: any = await query(loginQuery, {
+        variables: {
+          email: 'any_email@gmail.com',
+          password: 'any_password'
+        }
+      })
+
+      expect(response.data).toBeFalsy()
+      expect(response.errors[0].message).toBe
+        ('Unauthorized')
     })
   });
 });
