@@ -4,6 +4,5 @@ import { makeLoginController } from "@/main/factories/controllers/login/login/lo
 export default {
   Query: {
     login: async (parent: any, args: any) => adapterResolver(makeLoginController(), args)
-
   }
 }
