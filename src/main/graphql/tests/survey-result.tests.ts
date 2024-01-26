@@ -94,7 +94,6 @@ describe('SurveyResult GraphQL', async () => {
             isCurrentAccountAnswer
           }
           created_at
-          didAnswers
         }
       }
     `
@@ -135,6 +134,60 @@ describe('SurveyResult GraphQL', async () => {
 
       expect(response.data).toBeFalsy()
       expect(response.errors[0].message).toBe('Access denied')
+    })
+  });
+
+  describe('SaveSurveyResult Mutation', () => {
+    const saveSurveyResultMutation = gql`
+      mutation saveSurveyResult ($surveyId: String!, $answer: String!) {
+        saveSurveyResult (surveyId: $surveyId, answer: $answer) {
+          questions
+          answers {
+            answer
+            count
+            percent
+            isCurrentAccountAnswer
+          }
+          created_at
+        }
+      }
+    `
+
+    test('should return SurveyResult', async () => {
+      const surveys = await makeFakeSurveys()
+      const surveyId = surveys.insertedIds[0]
+
+      const { mutate } = createTestClient({
+        apolloServer,
+        extendMockRequest: {
+          headers: {
+            'x-access-token': accessToken
+          }
+        }
+      })
+
+      const response: any = await mutate(saveSurveyResultMutation, {
+        variables: {
+          surveyId: surveyId.toString(),
+          answer: 'any_answer'
+        }
+      })
+
+      expect(response.data.saveSurveyResult.question).toBe('any_question')
+      expect(response.data.saveSurveyResult.answers).toEqual([
+        {
+          answer: 'any_answer',
+          count: 1,
+          percent: 100,
+          isCurrentAccountAnswer: true
+        },
+        {
+          answer: 'other_answer',
+          count: 0,
+          percent: 0,
+          isCurrentAccountAnswer: false
+        }
+      ])
     })
   });
 });

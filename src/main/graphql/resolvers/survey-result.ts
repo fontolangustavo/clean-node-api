@@ -3,9 +3,9 @@ import { makeLoadSurveyResultController, makeSaveSurveyResultController } from "
 
 export default {
   Query: {
-    surveyResult: async (parent: any, args: any) => adapterResolver(makeLoadSurveyResultController(), args)
+    surveyResult: async (parent: any, args: any, context: any) => adapterResolver(makeLoadSurveyResultController(), args, context)
   },
   Mutation: {
-    saveSurveyResult: async (parent: any, args: any) => adapterResolver(makeSaveSurveyResultController(), args)
+    saveSurveyResult: async (parent: any, args: any, context: any) => adapterResolver(makeSaveSurveyResultController(), args, context)
   },
 }
