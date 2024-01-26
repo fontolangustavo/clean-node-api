@@ -1,13 +1,9 @@
+import { adapterResolver } from "@/main/adapters"
+import { makeLoginController } from "@/main/factories/controllers/login/login/login-controller-factory"
+
 export default {
   Query: {
-    login() {
-      return {
-        accessToken: 'any_token',
-        account: {
-          id: 'any_id',
-          name: 'any_name'
-        }
-      }
-    }
+    login: async (parent: any, args: any) => adapterResolver(makeLoginController(), args)
+
   }
 }
