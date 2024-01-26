@@ -12,5 +12,3 @@ export type SurveyResultModel = {
   answers: SurveyAnswerModel[],
   created_at: Date
 }
-
-

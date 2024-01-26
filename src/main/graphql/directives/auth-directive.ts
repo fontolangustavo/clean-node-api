@@ -20,6 +20,7 @@ export const authDirectiveTransformer = (schema: GraphQLSchema): GraphQLSchema =
           const httpResponse = await makeAuthMiddleware().handle(request)
           if (httpResponse.statusCode === 200) {
             Object.assign(context?.req, httpResponse.body)
+            Object.assign(args, httpResponse.body)
 
             return resolve.call(this, parent, args, context, info)
           } else {

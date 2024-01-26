@@ -1,3 +1,5 @@
 export * from './controllers/login/login/login-controller-factory'
 export * from './controllers/login/signup/signup-controller-factory'
 export * from './controllers/survey/load-surveys/load-surveys-controller-factory'
+export * from './controllers/survey-result/load-survey-result/load-surveys-controller-factory'
+export * from './controllers/survey-result/save-survey-result/save-surveys-controller-factory'
