@@ -2,7 +2,7 @@
 import request from 'supertest'
 import { sign } from 'jsonwebtoken';
 import { createTestClient } from 'apollo-server-integration-testing'
-import { Collection, ObjectId } from 'mongodb';
+import { Collection, InsertManyResult, ObjectId } from 'mongodb';
 import { ApolloServer, ExpressContext, gql } from 'apollo-server-express';
 
 import env from '@/main/config/env';
@@ -40,8 +40,8 @@ const makeFakeAccount = async (role?: string): Promise<string> => {
   return accessToken
 }
 
-const makeFakeSurveys = async (): Promise<void> => {
-  await surveyCollection.insertMany([
+const makeFakeSurveys = async (): Promise<InsertManyResult> => {
+  return await surveyCollection.insertMany([
     {
       question: 'any_question',
       created_at: new Date(),
@@ -62,7 +62,7 @@ const makeFakeSurveys = async (): Promise<void> => {
     }])
 }
 
-describe('Surveys GraphQL', async () => {
+describe('SurveyResult GraphQL', async () => {
   const accessToken = await makeFakeAccount()
 
   beforeAll(async () => {
@@ -82,15 +82,16 @@ describe('Surveys GraphQL', async () => {
     await accountCollection.deleteMany({})
   })
 
-  describe('Surveys Query', () => {
-    const surveysQuery = gql`
-      query surveys {
-        surveys {
-          id
+  describe('SurveyResult Query', () => {
+    const surveyResultQuery = gql`
+      query surveyResult ($surveyId: String!) {
+        surveyResult (surveyId: $surveyId) {
           questions
           answers {
-            image
             answer
+            count
+            percent
+            isCurrentAccountAnswer
           }
           created_at
           didAnswers
@@ -98,8 +99,9 @@ describe('Surveys GraphQL', async () => {
       }
     `
 
-    test('should return Surveys', async () => {
-      await makeFakeSurveys()
+    test('should return SurveyResult', async () => {
+      const surveys = await makeFakeSurveys()
+      const surveyId = surveys.insertedIds[0]
 
       const { query } = createTestClient({
         apolloServer,
@@ -110,17 +112,26 @@ describe('Surveys GraphQL', async () => {
         }
       })
 
-      const response: any = await query(surveysQuery)
+      const response: any = await query(surveyResultQuery, {
+        variables: {
+          surveyId: surveyId.toString()
+        }
+      })
 
-      expect(response.data.surveys.length).toBe(2)
+      expect(response.data.surveyResult.question).toBe('any_question')
     })
 
     test('should return AccessDeniedError if no token is provided', async () => {
-      await makeFakeSurveys()
+      const surveys = await makeFakeSurveys()
+      const surveyId = surveys.insertedIds[0]
 
       const { query } = createTestClient({ apolloServer: apolloServer })
 
-      const response: any = await query(surveysQuery)
+      const response: any = await query(surveyResultQuery, {
+        variables: {
+          surveyId: surveyId.toString()
+        }
+      })
 
       expect(response.data).toBeFalsy()
       expect(response.errors[0].message).toBe('Access denied')
