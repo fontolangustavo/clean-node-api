@@ -1,5 +1,6 @@
 import request from 'supertest'
-import app from '../config/app'
+import { setupApp } from '../config/app'
+import { Express } from 'express'
 import { MongoHelper } from '../../infra/db/mongodb/helpers/mongo-helper';
 import { Collection, ObjectId } from 'mongodb';
 import { sign } from 'jsonwebtoken';
@@ -7,6 +8,8 @@ import env from '../config/env';
 
 let surveyCollection: Collection
 let accountCollection: Collection
+
+let app: Express
 
 const makeFakeAccount = async (role?: string): Promise<string> => {
   let account = {
@@ -60,6 +63,7 @@ const makeFakeSurveys = async (): Promise<void> => {
 describe('Surey Routes', () => {
 
   beforeAll(async () => {
+    app = await setupApp()
     await MongoHelper.connect(process.env.MONGO_URL ?? '')
   })
 

@@ -12,5 +12,6 @@ export const makeApolloServer = (): ApolloServer => (
   new ApolloServer({
     resolvers,
     typeDefs,
+    context: ({ req }) => ({ req })
   })
 )
