@@ -32,7 +32,9 @@ const makeSurvey = async (): Promise<SurveyModel> => {
     ]
   })
 
-  return MongoHelper.map(await surveyCollection.findOne<SurveyModel>({ _id: res.insertedId }))
+  const survey = await surveyCollection.findOne<SurveyModel>({ _id: res.insertedId })
+
+  return MongoHelper.map(survey)
 }
 
 const makeAccount = async (): Promise<AccountModel> => {
@@ -42,7 +44,9 @@ const makeAccount = async (): Promise<AccountModel> => {
     password: 'any_password'
   })
 
-  return MongoHelper.map(await accountCollection.findOne<AccountModel>({ _id: res.insertedId }))
+  const account = await accountCollection.findOne<AccountModel>({ _id: res.insertedId })
+
+  return MongoHelper.map(account)
 }
 
 describe('Survey Result Mongo Repository', () => {
@@ -57,13 +61,13 @@ describe('Survey Result Mongo Repository', () => {
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
+    surveyCollection = MongoHelper.getCollection('surveys')
     await surveyCollection.deleteMany({})
 
-    surveyResultCollection = await MongoHelper.getCollection('surveyResults')
+    surveyResultCollection = MongoHelper.getCollection('surveyResults')
     await surveyResultCollection.deleteMany({})
 
-    accountCollection = await MongoHelper.getCollection('accounts')
+    accountCollection = MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
@@ -82,8 +86,8 @@ describe('Survey Result Mongo Repository', () => {
       })
 
       const surveyResult = await surveyResultCollection.findOne({
-        surveyId: survey.id,
-        accountId: account.id,
+        surveyId: new ObjectId(survey.id),
+        accountId: new ObjectId(account.id),
 
       })
 
@@ -112,8 +116,8 @@ describe('Survey Result Mongo Repository', () => {
 
       const surveyResult = await surveyResultCollection
         .find({
-          surveyId: survey.id,
-          accountId: account.id,
+          surveyId: new ObjectId(survey.id),
+          accountId: new ObjectId(account.id),
         })
         .toArray()
 

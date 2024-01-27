@@ -38,13 +38,13 @@ describe('Survey Mongo Repository', () => {
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
+    surveyCollection = MongoHelper.getCollection('surveys')
     await surveyCollection.deleteMany({})
 
-    surveyResultCollection = await MongoHelper.getCollection('surveyResults')
+    surveyResultCollection = MongoHelper.getCollection('surveyResults')
     await surveyResultCollection.deleteMany({})
 
-    accountCollection = await MongoHelper.getCollection('accounts')
+    accountCollection = MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
@@ -145,7 +145,7 @@ describe('Survey Mongo Repository', () => {
         }
       )
 
-      const id = res.insertedId.toString()
+      const id = res.insertedId.toHexString()
       const survey = await sut.loadById(id)
 
       expect(survey).toBeTruthy()
@@ -155,7 +155,7 @@ describe('Survey Mongo Repository', () => {
     test('should return null if survey does not exists', async () => {
       const sut = makeSut()
 
-      const survey = await sut.loadById(FakeObjectId("54495ad94c934721ede76d90").toHexString())
+      const survey = await sut.loadById(new FakeObjectId().toHexString())
 
       expect(survey).toBeFalsy()
     })
@@ -179,7 +179,7 @@ describe('Survey Mongo Repository', () => {
 
       const res = await surveyCollection.insertOne(survey)
 
-      const id = res.insertedId.toString()
+      const id = res.insertedId.toHexString()
       const answers = await sut.loadAnswers(id)
 
       expect(answers).toEqual(survey.answers.map(item => item.answer))
@@ -187,7 +187,7 @@ describe('Survey Mongo Repository', () => {
 
     test('should return empty array if survey does not exists', async () => {
       const sut = makeSut()
-      const answers = await sut.loadAnswers(FakeObjectId("54495ad94c934721ede76d90").toHexString())
+      const answers = await sut.loadAnswers(new FakeObjectId().toHexString())
 
       expect(answers).toEqual([])
     })
@@ -209,7 +209,7 @@ describe('Survey Mongo Repository', () => {
         }
       )
 
-      const id = res.insertedId.toString()
+      const id = res.insertedId.toHexString()
       const exists = await sut.checkById(id)
 
       expect(exists).toBeTruthy()
@@ -218,7 +218,7 @@ describe('Survey Mongo Repository', () => {
     test('should return false if survey not exists', async () => {
       const sut = makeSut()
 
-      const exists = await sut.checkById(FakeObjectId("54495ad94c934721ede76d90").toHexString())
+      const exists = await sut.checkById(new FakeObjectId().toHexString())
 
       expect(exists).toBeFalsy()
     })

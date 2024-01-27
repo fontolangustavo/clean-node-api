@@ -14,7 +14,7 @@ describe('Account Mongo Repository', () => {
   })
 
   beforeEach(async () => {
-    accountCollection = await MongoHelper.getCollection('accounts')
+    accountCollection = MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
@@ -71,6 +71,7 @@ describe('Account Mongo Repository', () => {
   describe('checkByEmail()', () => {
     test('should return true if email is valid', async () => {
       const sut = makeSut()
+
       await accountCollection.insertOne({
         name: 'any_name',
         email: 'any_email@email.com',
@@ -101,7 +102,7 @@ describe('Account Mongo Repository', () => {
         password: 'any_password'
       })
 
-      await sut.updateAccessToken(res.insertedId.toString(), 'any_token')
+      await sut.updateAccessToken(res.insertedId.toHexString(), 'any_token')
 
       const account = await accountCollection.findOne({ _id: res.insertedId })
 

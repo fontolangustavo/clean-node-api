@@ -24,7 +24,7 @@ const makeFakeAccount = async (role?: string): Promise<string> => {
 
   const res = await accountCollection.insertOne(account)
 
-  const id = res.insertedId.toString()
+  const id = res.insertedId.toHexString()
   const accessToken = sign({ id }, env.jwtSecret)
 
   await accountCollection.updateOne({
@@ -72,10 +72,10 @@ describe('Surey Routes', () => {
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
+    surveyCollection = MongoHelper.getCollection('surveys')
     await surveyCollection.deleteMany({})
 
-    accountCollection = await MongoHelper.getCollection('accounts')
+    accountCollection = MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
