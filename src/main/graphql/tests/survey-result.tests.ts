@@ -1,17 +1,16 @@
-
-import request from 'supertest'
 import { sign } from 'jsonwebtoken';
-import { createTestClient } from 'apollo-server-integration-testing'
+import { Express } from 'express'
 import { Collection, InsertManyResult, ObjectId } from 'mongodb';
-import { ApolloServer, ExpressContext, gql } from 'apollo-server-express';
+import { gql } from 'apollo-server-express';
+import request from 'supertest'
 
 import env from '@/main/config/env';
+import { setupApp } from '@/main/config/app'
 import { MongoHelper } from '@/infra/db/mongodb/helpers';
-import { makeApolloServer } from './helpers';
 
 let surveyCollection: Collection
 let accountCollection: Collection
-let apolloServer: ApolloServer
+let app: Express
 
 const makeFakeAccount = async (role?: string): Promise<string> => {
   let account = {
@@ -66,7 +65,7 @@ describe('SurveyResult GraphQL', async () => {
   const accessToken = await makeFakeAccount()
 
   beforeAll(async () => {
-    apolloServer = makeApolloServer()
+    app = await setupApp()
     await MongoHelper.connect(process.env.MONGO_URL ?? '')
   })
 
@@ -102,46 +101,9 @@ describe('SurveyResult GraphQL', async () => {
       const surveys = await makeFakeSurveys()
       const surveyId = surveys.insertedIds[0]
 
-      const { query } = createTestClient({
-        apolloServer,
-        extendMockRequest: {
-          headers: {
-            'x-access-token': accessToken
-          }
-        }
-      })
-
-      const response: any = await query(surveyResultQuery, {
-        variables: {
-          surveyId: surveyId.toString()
-        }
-      })
-
-      expect(response.data.surveyResult.question).toBe('any_question')
-    })
-
-    test('should return AccessDeniedError if no token is provided', async () => {
-      const surveys = await makeFakeSurveys()
-      const surveyId = surveys.insertedIds[0]
-
-      const { query } = createTestClient({ apolloServer: apolloServer })
-
-      const response: any = await query(surveyResultQuery, {
-        variables: {
-          surveyId: surveyId.toString()
-        }
-      })
-
-      expect(response.data).toBeFalsy()
-      expect(response.errors[0].message).toBe('Access denied')
-    })
-  });
-
-  describe('SaveSurveyResult Mutation', () => {
-    const saveSurveyResultMutation = gql`
-      mutation saveSurveyResult ($surveyId: String!, $answer: String!) {
-        saveSurveyResult (surveyId: $surveyId, answer: $answer) {
-          questions
+      const query = `query {
+        surveyResult (surveyId: "${surveyId}") {
+          question
           answers {
             answer
             count
@@ -150,31 +112,68 @@ describe('SurveyResult GraphQL', async () => {
           }
           created_at
         }
-      }
-    `
+      }`
 
+      const response = await request(app)
+        .post('/graphql')
+        .set('x-access-token', accessToken)
+        .send({ query })
+
+      expect(response.body.data.surveyResult.question).toBe('any_question')
+    })
+
+    test('should return AccessDeniedError if no token is provided', async () => {
+      const surveys = await makeFakeSurveys()
+      const surveyId = surveys.insertedIds[0]
+
+      const query = `query {
+        surveyResult (surveyId: "${surveyId}") {
+          question
+          answers {
+            answer
+            count
+            percent
+            isCurrentAccountAnswer
+          }
+          created_at
+        }
+      }`
+
+      const response = await request(app)
+        .post('/graphql')
+        .set('x-access-token', accessToken)
+        .send({ query })
+
+      expect(response.body.data).toBeFalsy()
+      expect(response.body.errors[0].message).toBe('Access denied')
+    })
+  });
+
+  describe('SaveSurveyResult Mutation', () => {
     test('should return SurveyResult', async () => {
       const surveys = await makeFakeSurveys()
       const surveyId = surveys.insertedIds[0]
 
-      const { mutate } = createTestClient({
-        apolloServer,
-        extendMockRequest: {
-          headers: {
-            'x-access-token': accessToken
+      const query = `mutation {
+        saveSurveyResult (surveyId: "${surveyId}", answer: "Answer 1") {
+          question
+          answers {
+            answer
+            count
+            percent
+            isCurrentAccountAnswer
           }
+          created_at
         }
-      })
+      }`
 
-      const response: any = await mutate(saveSurveyResultMutation, {
-        variables: {
-          surveyId: surveyId.toString(),
-          answer: 'any_answer'
-        }
-      })
+      const response = await request(app)
+        .post('/graphql')
+        .set('x-access-token', accessToken)
+        .send({ query })
 
-      expect(response.data.saveSurveyResult.question).toBe('any_question')
-      expect(response.data.saveSurveyResult.answers).toEqual([
+      expect(response.body.data.saveSurveyResult.question).toBe('any_question')
+      expect(response.body.data.saveSurveyResult.answers).toEqual([
         {
           answer: 'any_answer',
           count: 1,
@@ -194,17 +193,25 @@ describe('SurveyResult GraphQL', async () => {
       const surveys = await makeFakeSurveys()
       const surveyId = surveys.insertedIds[0]
 
-      const { mutate } = createTestClient({ apolloServer: apolloServer })
-
-      const response: any = await mutate(saveSurveyResultMutation, {
-        variables: {
-          surveyId: surveyId.toString(),
-          answer: 'any_answer'
+      const query = `mutation {
+        saveSurveyResult (surveyId: "${surveyId}", answer: "Answer 1") {
+          question
+          answers {
+            answer
+            count
+            percent
+            isCurrentAccountAnswer
+          }
+          created_at
         }
-      })
+      }`
 
-      expect(response.data).toBeFalsy()
-      expect(response.errors[0].message).toBe('Access denied')
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query })
+
+      expect(response.body.data).toBeFalsy()
+      expect(response.body.errors[0].message).toBe('Access denied')
     })
   });
 });

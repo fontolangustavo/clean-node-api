@@ -32,8 +32,9 @@ const makeSurvey = async (): Promise<SurveyModel> => {
     ]
   })
 
-  const survey = await surveyCollection.findOne<SurveyModel>({ _id: res.insertedId })
+  const survey = await surveyCollection.findOne<SurveyModel>({ _id: new ObjectId(res.insertedId) })
 
+  console.log("makeSurvey => ", survey)
   return MongoHelper.map(survey)
 }
 
@@ -44,7 +45,7 @@ const makeAccount = async (): Promise<AccountModel> => {
     password: 'any_password'
   })
 
-  const account = await accountCollection.findOne<AccountModel>({ _id: res.insertedId })
+  const account = await accountCollection.findOne<AccountModel>({ _id: new ObjectId(res.insertedId) })
 
   return MongoHelper.map(account)
 }
@@ -192,7 +193,7 @@ describe('Survey Result Mongo Repository', () => {
       ))
 
       const sut = makeSut()
-      const surveyResult = await sut.loadBySurveyId(survey.id, account2.id)
+      const surveyResult = await sut.loadBySurveyId(survey.id.toString(), account2.id.toString())
 
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.surveyId).toEqual(survey.id)
