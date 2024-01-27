@@ -34,7 +34,6 @@ const makeSurvey = async (): Promise<SurveyModel> => {
 
   const survey = await surveyCollection.findOne<SurveyModel>({ _id: new ObjectId(res.insertedId) })
 
-  console.log("makeSurvey => ", survey)
   return MongoHelper.map(survey)
 }
 
